@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шахматы и Шашки - Онлайн Игра</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-particles"></div>
+    
+    <div class="container">
+        <header>
+            <div class="lang-switcher">
+                <button class="lang-btn active" id="lang-ru" onclick="setLanguage('ru')">🇷🇺 RU</button>
+                <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">🇬🇧 EN</button>
+                <button class="lang-btn" id="lang-ua" onclick="setLanguage('ua')">🇺🇦 UA</button>
+            </div>
+            <div class="logo-wrapper">
+                <div class="logo-icon">♔</div>
+                <div class="header-text">
+                    <h1 data-translate="title">♔ Премиум Шахматная Платформа</h1>
+                    <p class="subtitle" data-translate="subtitle">Элитные Шахматы Online</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="mode-selector">
+            <div class="mode-card">
+                <h3 data-translate="selectMode">🎮 Выберите режим игры</h3>
+                <div class="mode-buttons">
+                    <button class="mode-btn active" id="pvpBtn" onclick="setGameMode('pvp')">
+                        <span class="mode-icon">👥</span>
+                        <span class="mode-text" data-translate="playerVsPlayer">Игрок vs Игрок</span>
+                    </button>
+                    <button class="mode-btn" id="aiBtn" onclick="setGameMode('ai')">
+                        <span class="mode-icon">🤖</span>
+                        <span class="mode-text" data-translate="vsAI">Против ИИ</span>
+                        <span class="badge" data-translate="unbeatable">НЕПОБЕДИМЫЙ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="game-info">
+            <div class="player-info">
+                <div class="player white-player">
+                    <span class="player-indicator"></span>
+                    <span class="player-name" data-translate="white">Белые</span>
+                </div>
+                <div class="turn-indicator" id="turnIndicator">
+                    <span data-translate="turn">Ход</span>: <span id="currentPlayer" data-translate="white">Белые</span>
+                </div>
+                <div class="player black-player">
+                    <span class="player-indicator"></span>
+                    <span class="player-name" data-translate="black">Черные</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <div class="board-wrapper">
+                <div class="board-container">
+                    <!-- Координаты слева (цифры 1-8) -->
+                    <div class="board-coordinates coord-left">
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                        <span>4</span>
+                        <span>5</span>
+                        <span>6</span>
+                        <span>7</span>
+                        <span>8</span>
+                    </div>
+                    
+                    <!-- Доска -->
+                    <div id="chessBoard" class="board"></div>
+                    
+                    <!-- Координаты снизу (буквы A-H) -->
+                    <div class="board-coordinates coord-bottom">
+                        <span>A</span>
+                        <span>B</span>
+                        <span>C</span>
+                        <span>D</span>
+                        <span>E</span>
+                        <span>F</span>
+                        <span>G</span>
+                        <span>H</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn primary" onclick="resetGame()">
+                <span class="btn-icon">🔄</span>
+                <span data-translate="newGame">Новая игра</span>
+            </button>
+            <button class="control-btn secondary" onclick="undoMove()">
+                <span class="btn-icon">↶</span>
+                <span data-translate="undo">Отменить ход</span>
+            </button>
+            <button class="control-btn hint" onclick="getHint()" id="hintBtn">
+                <span class="btn-icon">💡</span>
+                <span data-translate="hint">Подсказка</span>
+            </button>
+        </div>
+
+        <div class="game-status" id="gameStatus"></div>
+
+        <div class="captured-pieces">
+            <div class="captured-section">
+                <h3 data-translate="capturedByWhite">Взятые белыми:</h3>
+                <div id="capturedByWhite" class="captured-list"></div>
+            </div>
+            <div class="captured-section">
+                <h3 data-translate="capturedByBlack">Взятые черными:</h3>
+                <div id="capturedByBlack" class="captured-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно статистики -->
+    <div class="modal-overlay" id="statsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Победа!</h2>
+                <p class="modal-subtitle" id="modalSubtitle">Белые победили</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label" data-translate="totalMoves">Всего ходов</div>
+                    <div class="stat-value" id="statMoves">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label" data-translate="gameTime">Время игры</div>
+                    <div class="stat-value" id="statTime">0:00</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label" data-translate="capturedPieces">Взято фигур</div>
+                    <div class="stat-value" id="statCaptured">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label" data-translate="gameMode">Режим</div>
+                    <div class="stat-value" id="statMode">PVP</div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn primary" onclick="closeModalAndReset()">
+                    <span>🔄</span>
+                    <span data-translate="newGame">Новая игра</span>
+                </button>
+                <button class="modal-btn secondary" onclick="closeModal()">
+                    <span>👁️</span>
+                    <span data-translate="viewGame">Просмотр</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="translations.js"></script>
+    <script src="chess.js"></script>
+    <script src="checkers.js"></script>
+    <script src="ai.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
